@@ -1,6 +1,9 @@
 # activity-recorder-web-client
 
-## Project setup
+Dont use this Repository on production. Its for learning purposes with ❤ created. 
+A Web Client made with Vue to interact with https://github.com/benblub/activity-recorder.
+
+## Install
 ```
 yarn install
 ```
