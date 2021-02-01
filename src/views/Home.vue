@@ -99,11 +99,21 @@
     <!-- DATA -->
     <div class="p-3">
       <div v-if="loading" class="loading">
-        Loading...
+        <div class="d-flex justify-content-center">
+          <div class="spinner-grow" style="width: 3rem; height: 3rem; margin-top: 10em;" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
       </div>
 
-      <div v-if="error" class="error">
+      <div v-if="error" class="error alert alert-danger">
         {{ error }}
+        <button
+                @click="error = null"
+                type="button"
+                class="close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
 
 
@@ -113,8 +123,14 @@
         <table class="table">
           <thead>
           <tr>
-            <th>id</th>
-            <th>Date</th>
+            <th @click="orderById">
+              <i class="bi bi-caret-up" v-bind:class="(orderIdString === 'asc')?'active':'inactive'"></i>
+              <i class="bi bi-caret-down" v-bind:class="(orderIdString === 'desc')?'active':'inactive'"></i>
+              id</th>
+            <th @click="orderByDate">
+              <i class="bi bi-caret-up" v-bind:class="(orderDateString === 'asc')?'active':'inactive'"></i>
+              <i class="bi bi-caret-down" v-bind:class="(orderDateString === 'desc')?'active':'inactive'"></i>
+              Date</th>
             <th>performed time</th>
             <th>Description</th>
             <th>Action</th>
@@ -128,28 +144,36 @@
             <td>{{ activity.description }}</td>
             <td>
               <button type="button" class="btn btn-secondary">Edit</button>
-              <button type="button" class="btn btn-danger">Delete</button>
+              <button
+                      @click="deleteFoo(activity.id)"
+                      type="button"
+                      class="btn btn-danger">Delete</button>
             </td>
           </tr>
         </table>
+
+        <!-- PAGINATION -->
+        <b-pagination
+                v-model="page"
+                :total-rows="totalItems"
+                :per-page="5"
+                aria-controls="my-table"
+                @input="paginationUpdate"
+        ></b-pagination>
+        <p>Total Items: {{ totalItems }}</p>
+
       </div>
+
     </div>
 
-    <!-- PAGINATION -->
-    <b-pagination
-            v-model="page"
-            :total-rows="totalItems"
-            :per-page="5"
-            aria-controls="my-table"
-            @input="paginationUpdate"
-    ></b-pagination>
-    <p>Total Items: {{ totalItems }}</p>
+
 
   </div>
 </template>
 
 <script>
   import { fetchActivities } from "../service/fetchActivities";
+  import { deleteActivity } from '../service/Activity/deleteActivity';
 
   export default {
   name: 'Home',
@@ -165,6 +189,10 @@
         totalItems: 0,
         totalPages: 0,
         hydraView: null,
+        orderId: null,
+        orderIdString: null,
+        orderDate: null,
+        orderDateString: null
       }
     },
     created() {
@@ -180,6 +208,7 @@
       },
       async fetchData() {
         this.loading = true
+        this.activities = false;
         let response;
 
         try {
@@ -188,7 +217,9 @@
                   this.page,
                   this.searchDescription,
                   this.searchActivityDateAfter,
-                  this.searchActivityDateBefore
+                  this.searchActivityDateBefore,
+                  this.orderIdString,
+                  this.orderDateString
           )
           this.loading = false
 
@@ -218,6 +249,33 @@
         this.searchDescription = ''
         this.searchActivityDateAfter = ''
         this.searchActivityDateBefore = ''
+      },
+      deleteFoo: async function(activityId) {
+        try {
+           await deleteActivity(activityId)
+        } catch (error) {
+          this.error = error.response.data.message
+        }
+      },
+      orderById: function () {
+        this.orderId = !this.orderId
+        if (this.orderId) {
+          this.orderIdString = 'asc'
+        } else {
+          this.orderIdString = 'desc'
+        }
+        this.orderDateString = null
+        this.fetchData()
+      },
+      orderByDate: function () {
+        this.orderDate = !this.orderDate
+        if (this.orderDate) {
+          this.orderDateString = 'asc'
+        } else {
+          this.orderDateString = 'desc'
+        }
+        this.orderIdString = null
+        this.fetchData()
       }
     },
     watch: {
@@ -235,3 +293,12 @@
     }
 }
 </script>
+
+<style>
+  .active {
+    color: cornflowerblue;
+  }
+  .inactive {
+    color: black;
+  }
+</style>

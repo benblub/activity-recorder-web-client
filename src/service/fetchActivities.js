@@ -4,7 +4,11 @@ export function fetchActivities(
     page,
     description,
     activityDateAfter,
-    activityDateBefore
+    activityDateBefore,
+    orderById,
+    orderByActivityDate,
+    orderByPerformedTime,
+    orderByDescription
 ) {
     const params = {}
 
@@ -22,6 +26,22 @@ export function fetchActivities(
 
     if (activityDateBefore) {
         params['activityDate[before]'] = activityDateBefore
+    }
+
+    if (orderById) {
+        params['order[id]'] = orderById
+    }
+
+    if (orderByPerformedTime) {
+        params['order[performendTime]'] = orderByPerformedTime
+    }
+
+    if (orderByDescription) {
+        params['order[description]'] = orderByDescription
+    }
+
+    if (orderByActivityDate) {
+        params['order[activityDate]'] = orderByActivityDate
     }
 
     let request = axios.get('http://localhost:8000/api/activities', {
