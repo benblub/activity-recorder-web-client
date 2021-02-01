@@ -32,14 +32,6 @@
     </div>
 
     <!-- DATA -->
-    <b-pagination
-            v-model="page"
-            :total-rows="totalItems"
-            :per-page="30"
-            aria-controls="my-table"
-            @input="paginationUpdate"
-    ></b-pagination>
-    <p class="mt-3">Current Page: {{ page }}</p>
     <div class="p-3">
       <div v-if="loading" class="loading">
         Loading...
@@ -77,6 +69,16 @@
         </table>
       </div>
     </div>
+
+    <!-- PAGINATION -->
+    <b-pagination
+            v-model="page"
+            :total-rows="totalItems"
+            :per-page="5"
+            aria-controls="my-table"
+            @input="paginationUpdate"
+    ></b-pagination>
+    <p>Total Items: {{ totalItems }}</p>
 
   </div>
 </template>
@@ -134,7 +136,7 @@
         this.totalItems = response.data['hydra:totalItems'];
 
         //this.page = this.hydraView.id;
-        this.totalPages = parseInt(this.totalItems / 30);
+        this.totalPages = parseInt(this.totalItems / 5);
       }
     },
     watch: {
