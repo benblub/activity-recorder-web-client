@@ -9,26 +9,91 @@
 
     <!-- SEARCH -->
     <div class="row p-3">
-      <div class="col">
+      <div class="col input-group">
         <input
                 type="text"
                 class="form-control"
                 placeholder="search description"
                 v-model="searchDescription"
         >
+
+        <div
+                v-show="searchDescription !== ''"
+                class="input-group-append"
+        >
+          <button
+                  class="btn btn-outline-secondary"
+                  @click="eraseSearchDescription"
+          >
+            x
+          </button>
+        </div>
       </div>
+
+
       <div class="col">
         <date-picker v-model="searchActivityDateAfter">
           <template v-slot="{ inputValue, inputEvents }">
+            <div class="input-group">
+              <input
+                      placeholder="Search ActivityDate after"
+                      class="form-control"
+                      :value="inputValue"
+                      v-on="inputEvents"
+              />
+
+              <div
+                v-show="searchActivityDateAfter !== ''"
+                class="input-group-append"
+              >
+                <button
+                  class="btn btn-outline-secondary"
+                  @click="ereaseSearchActivityDateAfter"
+                >
+                  x
+                </button>
+              </div>
+            </div>
+          </template>
+        </date-picker>
+      </div>
+
+      <!-- SEARCH DATE BEFORE -->
+      <div class="col">
+        <date-picker v-model="searchActivityDateBefore">
+          <template v-slot="{ inputValue, inputEvents }">
+            <div class="input-group">
             <input
-                    placeholder="Search ActivityDate after"
+                    placeholder="Search ActivityDate before"
                     class="form-control"
                     :value="inputValue"
                     v-on="inputEvents"
             />
+
+              <div
+                v-show="searchActivityDateBefore !== ''"
+                class="input-group-append"
+              >
+                <button
+                  class="btn btn-outline-secondary"
+                  @click="eraseSearchActivityDateBefore"
+                  >
+                  x
+                </button>
+              </div>
+            </div>
           </template>
         </date-picker>
       </div>
+
+      <div class="col">
+        <button
+                @click="eraseFilter"
+                v-show="searchDescription !== '' || searchActivityDateBefore !== ''"
+                class="btn btn-outline-secondary
+        ">clear Filter</button>
+      </div>
+
     </div>
 
     <!-- DATA -->
@@ -94,7 +159,8 @@
         activities: null,
         error: null,
         searchDescription: '',
-        searchActivityDateAfter: null,
+        searchActivityDateAfter: '',
+        searchActivityDateBefore: '',
         page: 1, // our current Page from Pagination
         totalItems: 0,
         totalPages: 0,
@@ -121,7 +187,8 @@
           response = await fetchActivities(
                   this.page,
                   this.searchDescription,
-                  this.searchActivityDateAfter
+                  this.searchActivityDateAfter,
+                  this.searchActivityDateBefore
           )
           this.loading = false
 
@@ -137,6 +204,20 @@
 
         //this.page = this.hydraView.id;
         this.totalPages = parseInt(this.totalItems / 5);
+      },
+      eraseSearchDescription() {
+        this.searchDescription = ''
+      },
+      ereaseSearchActivityDateAfter() {
+        this.searchActivityDateAfter = ''
+      },
+      eraseSearchActivityDateBefore() {
+        this.searchActivityDateBefore = ''
+      },
+      eraseFilter() {
+        this.searchDescription = ''
+        this.searchActivityDateAfter = ''
+        this.searchActivityDateBefore = ''
       }
     },
     watch: {
@@ -146,6 +227,9 @@
         this.fetchData()
       },
       searchActivityDateAfter: function () {
+        this.fetchData()
+      },
+      searchActivityDateBefore: function () {
         this.fetchData()
       }
     }

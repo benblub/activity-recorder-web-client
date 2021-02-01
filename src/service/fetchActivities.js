@@ -3,12 +3,13 @@ import axios from "axios";
 export function fetchActivities(
     page,
     description,
-    activityDateAfter
+    activityDateAfter,
+    activityDateBefore
 ) {
     const params = {}
 
     if (page) {
-        params.page = page;
+        params.page = page
     }
 
     if (description) {
@@ -16,12 +17,16 @@ export function fetchActivities(
     }
 
     if (activityDateAfter) {
-        params['activityDate[after]'] = activityDateAfter;
+        params['activityDate[after]'] = activityDateAfter
+    }
+
+    if (activityDateBefore) {
+        params['activityDate[before]'] = activityDateBefore
     }
 
     let request = axios.get('http://localhost:8000/api/activities', {
         params,
     })
 
-    return request;
+    return request
 }
