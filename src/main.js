@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from "moment";
 import DatePicker from 'v-calendar/lib/components/date-picker.umd';
 import { BPagination } from "bootstrap-vue";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 Vue.config.productionTip = false
 

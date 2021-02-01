@@ -9,44 +9,111 @@
 
     <!-- SEARCH -->
     <div class="row p-3">
-      <div class="col">
+      <div class="col input-group">
         <input
                 type="text"
                 class="form-control"
                 placeholder="search description"
                 v-model="searchDescription"
         >
+
+        <div
+                v-show="searchDescription !== ''"
+                class="input-group-append"
+        >
+          <button
+                  class="btn btn-outline-secondary"
+                  @click="eraseSearchDescription"
+          >
+            x
+          </button>
+        </div>
       </div>
+
+
       <div class="col">
         <date-picker v-model="searchActivityDateAfter">
           <template v-slot="{ inputValue, inputEvents }">
+            <div class="input-group">
+              <input
+                      placeholder="Search ActivityDate after"
+                      class="form-control"
+                      :value="inputValue"
+                      v-on="inputEvents"
+              />
+
+              <div
+                v-show="searchActivityDateAfter !== ''"
+                class="input-group-append"
+              >
+                <button
+                  class="btn btn-outline-secondary"
+                  @click="ereaseSearchActivityDateAfter"
+                >
+                  x
+                </button>
+              </div>
+            </div>
+          </template>
+        </date-picker>
+      </div>
+
+      <!-- SEARCH DATE BEFORE -->
+      <div class="col">
+        <date-picker v-model="searchActivityDateBefore">
+          <template v-slot="{ inputValue, inputEvents }">
+            <div class="input-group">
             <input
-                    placeholder="Search ActivityDate after"
+                    placeholder="Search ActivityDate before"
                     class="form-control"
                     :value="inputValue"
                     v-on="inputEvents"
             />
+
+              <div
+                v-show="searchActivityDateBefore !== ''"
+                class="input-group-append"
+              >
+                <button
+                  class="btn btn-outline-secondary"
+                  @click="eraseSearchActivityDateBefore"
+                  >
+                  x
+                </button>
+              </div>
+            </div>
           </template>
         </date-picker>
       </div>
+
+      <div class="col">
+        <button
+                @click="eraseFilter"
+                v-show="searchDescription !== '' || searchActivityDateBefore !== ''"
+                class="btn btn-outline-secondary
+        ">clear Filter</button>
+      </div>
+
     </div>
 
     <!-- DATA -->
-    <b-pagination
-            v-model="page"
-            :total-rows="totalItems"
-            :per-page="30"
-            aria-controls="my-table"
-            @input="paginationUpdate"
-    ></b-pagination>
-    <p class="mt-3">Current Page: {{ page }}</p>
     <div class="p-3">
       <div v-if="loading" class="loading">
-        Loading...
+        <div class="d-flex justify-content-center">
+          <div class="spinner-grow" style="width: 3rem; height: 3rem; margin-top: 10em;" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
       </div>
 
-      <div v-if="error" class="error">
+      <div v-if="error" class="error alert alert-danger">
         {{ error }}
+        <button
+                @click="error = null"
+                type="button"
+                class="close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
 
 
@@ -56,8 +123,14 @@
         <table class="table">
           <thead>
           <tr>
-            <th>id</th>
-            <th>Date</th>
+            <th @click="orderById">
+              <i class="bi bi-caret-up" v-bind:class="(orderIdString === 'asc')?'active':'inactive'"></i>
+              <i class="bi bi-caret-down" v-bind:class="(orderIdString === 'desc')?'active':'inactive'"></i>
+              id</th>
+            <th @click="orderByDate">
+              <i class="bi bi-caret-up" v-bind:class="(orderDateString === 'asc')?'active':'inactive'"></i>
+              <i class="bi bi-caret-down" v-bind:class="(orderDateString === 'desc')?'active':'inactive'"></i>
+              Date</th>
             <th>performed time</th>
             <th>Description</th>
             <th>Action</th>
@@ -71,18 +144,36 @@
             <td>{{ activity.description }}</td>
             <td>
               <button type="button" class="btn btn-secondary">Edit</button>
-              <button type="button" class="btn btn-danger">Delete</button>
+              <button
+                      @click="deleteFoo(activity.id)"
+                      type="button"
+                      class="btn btn-danger">Delete</button>
             </td>
           </tr>
         </table>
+
+        <!-- PAGINATION -->
+        <b-pagination
+                v-model="page"
+                :total-rows="totalItems"
+                :per-page="5"
+                aria-controls="my-table"
+                @input="paginationUpdate"
+        ></b-pagination>
+        <p>Total Items: {{ totalItems }}</p>
+
       </div>
+
     </div>
+
+
 
   </div>
 </template>
 
 <script>
   import { fetchActivities } from "../service/fetchActivities";
+  import { deleteActivity } from '../service/Activity/deleteActivity';
 
   export default {
   name: 'Home',
@@ -92,11 +183,16 @@
         activities: null,
         error: null,
         searchDescription: '',
-        searchActivityDateAfter: null,
+        searchActivityDateAfter: '',
+        searchActivityDateBefore: '',
         page: 1, // our current Page from Pagination
         totalItems: 0,
         totalPages: 0,
         hydraView: null,
+        orderId: null,
+        orderIdString: null,
+        orderDate: null,
+        orderDateString: null
       }
     },
     created() {
@@ -112,6 +208,7 @@
       },
       async fetchData() {
         this.loading = true
+        this.activities = false;
         let response;
 
         try {
@@ -119,7 +216,10 @@
           response = await fetchActivities(
                   this.page,
                   this.searchDescription,
-                  this.searchActivityDateAfter
+                  this.searchActivityDateAfter,
+                  this.searchActivityDateBefore,
+                  this.orderIdString,
+                  this.orderDateString
           )
           this.loading = false
 
@@ -134,7 +234,48 @@
         this.totalItems = response.data['hydra:totalItems'];
 
         //this.page = this.hydraView.id;
-        this.totalPages = parseInt(this.totalItems / 30);
+        this.totalPages = parseInt(this.totalItems / 5);
+      },
+      eraseSearchDescription() {
+        this.searchDescription = ''
+      },
+      ereaseSearchActivityDateAfter() {
+        this.searchActivityDateAfter = ''
+      },
+      eraseSearchActivityDateBefore() {
+        this.searchActivityDateBefore = ''
+      },
+      eraseFilter() {
+        this.searchDescription = ''
+        this.searchActivityDateAfter = ''
+        this.searchActivityDateBefore = ''
+      },
+      deleteFoo: async function(activityId) {
+        try {
+           await deleteActivity(activityId)
+        } catch (error) {
+          this.error = error.response.data.message
+        }
+      },
+      orderById: function () {
+        this.orderId = !this.orderId
+        if (this.orderId) {
+          this.orderIdString = 'asc'
+        } else {
+          this.orderIdString = 'desc'
+        }
+        this.orderDateString = null
+        this.fetchData()
+      },
+      orderByDate: function () {
+        this.orderDate = !this.orderDate
+        if (this.orderDate) {
+          this.orderDateString = 'asc'
+        } else {
+          this.orderDateString = 'desc'
+        }
+        this.orderIdString = null
+        this.fetchData()
       }
     },
     watch: {
@@ -145,7 +286,19 @@
       },
       searchActivityDateAfter: function () {
         this.fetchData()
+      },
+      searchActivityDateBefore: function () {
+        this.fetchData()
       }
     }
 }
 </script>
+
+<style>
+  .active {
+    color: cornflowerblue;
+  }
+  .inactive {
+    color: black;
+  }
+</style>
