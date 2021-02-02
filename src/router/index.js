@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Settings from "../views/Settings";
+import CreateActivity from "../views/Activity/CreateActivity";
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,11 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: Settings
+  },
+  {
+    path: '/activity/create',
+    name: 'CreateActivity',
+    component: CreateActivity
   }
 ]
 
