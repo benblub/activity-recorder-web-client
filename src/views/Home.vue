@@ -3,7 +3,7 @@
 
     <!-- NEW -->
     <div class="p-3">
-      <button type="button" class="btn btn-secondary">New Activity</button>
+      <router-link to="/activity/create"><button type="button" class="btn btn-secondary">New Activity</button></router-link>
     </div>
 
 
