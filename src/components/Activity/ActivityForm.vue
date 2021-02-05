@@ -69,6 +69,7 @@
                 return moment(String(value)).format('MM.DD.YYYY')
             },
             async create() {
+                this.errors = []
 
                 try {
                     if (this.action === 'update') {
@@ -109,13 +110,6 @@
                 }
             }
         },
-        props: ['description', 'timeProp', 'action', 'dateProp'],
-        filters: {
-            formatDate: function(value) {
-                if (value) {
-                    return moment(String(value)).format('MM.DD.YYYY')
-                }
-            }
-        }
+        props: ['description', 'timeProp', 'action', 'dateProp']
     }
 </script>
