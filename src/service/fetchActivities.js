@@ -44,7 +44,7 @@ export function fetchActivities(
         params['order[activityDate]'] = orderByActivityDate
     }
 
-    let request = axios.get('http://localhost:8000/api/activities', {
+    let request = axios.get('/api/activities', {
         params,
     })
 

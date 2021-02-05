@@ -5,7 +5,7 @@ export function createActivity(
     time,
     description
 ) {
-    let request = axios.post('http://localhost:8000/api/activities', {
+    let request = axios.post('/api/activities', {
         activityDate: date,
         performendTime: parseFloat(time),
         description: description,
