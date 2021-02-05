@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div v-if="errors.length > 0" class="alert alert-danger" role="alert">
-            <p v-for="error in errors" :key="error">{{ error }}</p>
+        <div v-if="errors.length > 0">
+            <div v-for="error in errors" :key="error" class="alert alert-danger" role="alert">{{ error }}</div>
         </div>
 
         <form v-on:submit.prevent>
@@ -77,7 +77,7 @@
                             this.$route.params.id,
                             this.date,
                             this.time,
-                            this.description
+                            this.description2
                         )
                     }
 
@@ -85,7 +85,7 @@
                         await createActivity(
                             this.date,
                             this.time,
-                            this.description
+                            this.description2
                         )
                     }
                 } catch (e) {
