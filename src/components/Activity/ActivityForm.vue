@@ -39,6 +39,11 @@
             <button
                     @click="create"
                     class="btn btn-outline-secondary">save</button>
+
+            <div v-if="success">
+                <p style="color: green">saved!</p>
+            </div>
+
         </form>
     </div>
 </template>
@@ -60,6 +65,7 @@
                 timeError: null,
                 dateError: null,
                 errors: [],
+                success: null,
                 description2: this.description,
                 time: this.timeProp
             }
@@ -68,8 +74,15 @@
             frontEndDateFormat: function(value) {
                 return moment(String(value)).format('MM.DD.YYYY')
             },
+            resetErrors() {
+                this.descriptionError =  null,
+                this.errors = [],
+                this.success = null,
+                this.timeError = null,
+                this.dateError = null
+            },
             async create() {
-                this.errors = []
+                this.resetErrors()
 
                 try {
                     if (this.action === 'update') {
@@ -79,6 +92,8 @@
                             this.time,
                             this.description2
                         )
+
+                        this.success = true
                     }
 
                     if (this.action === 'create') {
