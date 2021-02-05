@@ -27,7 +27,7 @@
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea v-model="description"
+                <textarea v-model="description2"
                           class="form-control"
                           v-bind:class="{'is-invalid': descriptionError}"
                           id="description"
@@ -45,29 +45,53 @@
 
 <script>
     import {createActivity} from "../../service/Activity/createActivity";
+    import {updateActivity} from "../../service/Activity/updateActivity";
+    import moment from "moment";
 
     export default {
         name: 'ActivityForm',
+        created() {
+            this.date = this.frontEndDateFormat(this.date)
+        },
         data: function () {
             return {
-                date: null,
-                time: null,
-                description: null,
+                date: this.dateProp,
                 descriptionError: null,
                 timeError: null,
                 dateError: null,
-                errors: []
+                errors: [],
+                description2: this.description,
+                time: this.timeProp
             }
         },
         methods: {
+            frontEndDateFormat: function(value) {
+                return moment(String(value)).format('MM.DD.YYYY')
+            },
             async create() {
+
                 try {
-                    await createActivity(
-                        this.date,
-                        this.time,
-                        this.description
-                    )
+                    if (this.action === 'update') {
+                        await updateActivity(
+                            this.$route.params.id,
+                            this.date,
+                            this.time,
+                            this.description
+                        )
+                    }
+
+                    if (this.action === 'create') {
+                        await createActivity(
+                            this.date,
+                            this.time,
+                            this.description
+                        )
+                    }
                 } catch (e) {
+                    if (e.response.data.message) {
+                        this.errors.push(e.response.data.message)
+                    }
+
                     if (e.response.data.violations) {
                         for(let i in e.response.data.violations) {
                             // map on top or on form field path
@@ -82,6 +106,14 @@
                             }
                         }
                     }
+                }
+            }
+        },
+        props: ['description', 'timeProp', 'action', 'dateProp'],
+        filters: {
+            formatDate: function(value) {
+                if (value) {
+                    return moment(String(value)).format('MM.DD.YYYY')
                 }
             }
         }

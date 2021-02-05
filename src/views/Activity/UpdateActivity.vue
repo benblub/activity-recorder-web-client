@@ -2,7 +2,13 @@
     <div class="updateActivity">
         <h1>Update Activity</h1>
 
-        <ActivityForm v-if='data.description' :description="data.description"></ActivityForm>
+        <ActivityForm
+                v-if='data.description'
+                    :description="data.description"
+                    :timeProp="data.performendTime"
+                    :dateProp="data.activityDate"
+                action="update">
+        </ActivityForm>
     </div>
 </template>
 
@@ -17,7 +23,10 @@
         data() {
             return {
                 activityId: null,
-                data: 'foo'
+                data: {
+                    description: null,
+                    performendTime: null
+                }
             }
         },
         created() {

@@ -2,7 +2,7 @@
     <div class="activityCreate">
         <h1>Create Activity</h1>
 
-        <ActivityForm></ActivityForm>
+        <ActivityForm action="create"></ActivityForm>
     </div>
 </template>
 
