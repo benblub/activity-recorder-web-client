@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div v-if="errors.length > 0" class="alert alert-danger" role="alert">
-            <p v-for="error in errors" :key="error">{{ error }}</p>
+        <div v-if="errors.length > 0">
+            <div v-for="error in errors" :key="error" class="alert alert-danger" role="alert">{{ error }}</div>
         </div>
 
         <form v-on:submit.prevent>
@@ -27,7 +27,7 @@
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea v-model="description"
+                <textarea v-model="description2"
                           class="form-control"
                           v-bind:class="{'is-invalid': descriptionError}"
                           id="description"
@@ -39,35 +39,75 @@
             <button
                     @click="create"
                     class="btn btn-outline-secondary">save</button>
+
+            <div v-if="success">
+                <p style="color: green">saved!</p>
+            </div>
+
         </form>
     </div>
 </template>
 
 <script>
     import {createActivity} from "../../service/Activity/createActivity";
+    import {updateActivity} from "../../service/Activity/updateActivity";
+    import moment from "moment";
 
     export default {
         name: 'ActivityForm',
+        created() {
+            this.date = this.frontEndDateFormat(this.date)
+        },
         data: function () {
             return {
-                date: null,
-                time: null,
-                description: null,
+                date: this.dateProp,
                 descriptionError: null,
                 timeError: null,
                 dateError: null,
-                errors: []
+                errors: [],
+                success: null,
+                description2: this.description,
+                time: this.timeProp
             }
         },
         methods: {
+            frontEndDateFormat: function(value) {
+                return moment(String(value)).format('MM.DD.YYYY')
+            },
+            resetErrors() {
+                this.descriptionError =  null,
+                this.errors = [],
+                this.success = null,
+                this.timeError = null,
+                this.dateError = null
+            },
             async create() {
+                this.resetErrors()
+
                 try {
-                    await createActivity(
-                        this.date,
-                        this.time,
-                        this.description
-                    )
+                    if (this.action === 'update') {
+                        await updateActivity(
+                            this.$route.params.id,
+                            this.date,
+                            this.time,
+                            this.description2
+                        )
+
+                        this.success = true
+                    }
+
+                    if (this.action === 'create') {
+                        await createActivity(
+                            this.date,
+                            this.time,
+                            this.description2
+                        )
+                    }
                 } catch (e) {
+                    if (e.response.data.message) {
+                        this.errors.push(e.response.data.message)
+                    }
+
                     if (e.response.data.violations) {
                         for(let i in e.response.data.violations) {
                             // map on top or on form field path
@@ -84,6 +124,7 @@
                     }
                 }
             }
-        }
+        },
+        props: ['description', 'timeProp', 'action', 'dateProp']
     }
 </script>

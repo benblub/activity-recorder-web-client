@@ -7,6 +7,18 @@ import moment from "moment";
 import DatePicker from 'v-calendar/lib/components/date-picker.umd';
 import { BPagination } from "bootstrap-vue";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import store from "./store";
+import Axios from "axios";
+
+Vue.prototype.$http = Axios
+Vue.prototype.$http.defaults.baseURL = 'http://localhost:8000'
+
+const token  = localStorage.getItem('apitoken')
+
+if (token) {
+  Vue.prototype.$http.defaults.headers.common['X-AUTH-TOKEN'] = token
+}
+
 
 Vue.config.productionTip = false
 
@@ -21,5 +33,6 @@ Vue.filter('formatDate', function(value) {
 
 new Vue({
   router,
+  store: store,
   render: h => h(App)
 }).$mount('#app')

@@ -1,15 +1,16 @@
 import axios from "axios";
 
-export function createActivity(
+export function updateActivity(
+    id,
     date,
     time,
     description
 ) {
-    let request = axios.post('/api/activities', {
+    let request = axios.put('/api/activities/'+id, {
         activityDate: date,
         performendTime: parseFloat(time),
         description: description,
-        user: '/api/users/23'
+        user: localStorage.getItem('userIri')
     })
 
     return request

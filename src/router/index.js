@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Settings from "../views/Settings";
 import CreateActivity from "../views/Activity/CreateActivity";
 import UpdateActivity from "../views/Activity/UpdateActivity";
+import Login from "../components/Login";
 
 Vue.use(VueRouter)
 
@@ -35,6 +36,11 @@ const routes = [
     path: '/activity/update/:id',
     name: 'UpdateActivity',
     component: UpdateActivity
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
   }
 ]
 

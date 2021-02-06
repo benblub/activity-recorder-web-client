@@ -143,9 +143,9 @@
             <td>{{ activity.performendTime }}</td>
             <td>{{ activity.description }}</td>
             <td>
-              <button
-                      type="button"
-                      class="btn btn-secondary"><router-link :to="{ name: 'UpdateActivity', params: { id: activity.id } }">Edit</router-link></button>
+              <router-link :to="{ name: 'UpdateActivity', params: { id: activity.id } }"
+                class="btn btn-outline-secondary"
+              >Edit</router-link>
               <button
                       @click="deleteFoo(activity.id)"
                       type="button"
