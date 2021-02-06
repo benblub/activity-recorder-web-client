@@ -27,6 +27,8 @@
 
 <script>
     import {login} from "../service/login";
+    import Vue from "vue";
+    import store from "../store";
 
     export default {
         data () {
@@ -44,9 +46,14 @@
                      localStorage.apitoken = response.data.apiToken
                      localStorage.userIri = response.data.iri
 
+                     Vue.prototype.$http.defaults.headers.common['X-AUTH-TOKEN'] = response.data.apiToken
+
+                     store.commit('auth_success', response.data.apiToken, response.data.iri)
+
                      this.$router.push('/')
                  } catch (e) {
                      console.log(e)
+                     localStorage.removeItem('apiToken')
                      this.error = true
                  }
 
