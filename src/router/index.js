@@ -5,6 +5,7 @@ import Settings from "../views/Settings";
 import CreateActivity from "../views/Activity/CreateActivity";
 import UpdateActivity from "../views/Activity/UpdateActivity";
 import Login from "../components/Login";
+import store from "../store";
 
 Vue.use(VueRouter)
 
@@ -12,7 +13,10 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/about',
@@ -25,17 +29,26 @@ const routes = [
   {
     path: '/settings',
     name: 'Settings',
-    component: Settings
+    component: Settings,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/activity/create',
     name: 'CreateActivity',
-    component: CreateActivity
+    component: CreateActivity,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/activity/update/:id',
     name: 'UpdateActivity',
-    component: UpdateActivity
+    component: UpdateActivity,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/login',
@@ -49,5 +62,18 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+    if (store.getters.isLoggedIn) {
+      next()
+      return
+    }
+    next('/login')
+  } else {
+    next()
+  }
+})
+
 
 export default router
