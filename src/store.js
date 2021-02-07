@@ -14,6 +14,10 @@ export default new Vuex.Store({
         auth_success(state, token, user) {
             state.token = token,
             state.user = user
+        },
+        logout(state) {
+            state.token = null,
+            state.user = null
         }
     },
     actions: {
@@ -21,6 +25,8 @@ export default new Vuex.Store({
             return new Promise((resolve) => {
                 commit('logout')
                 localStorage.removeItem('apitoken')
+                localStorage.removeItem('userIri')
+                localStorage.removeItem('email')
                 delete axios.defaults.headers.common['X-AUTH-TOKEN']
                 resolve()
             })
