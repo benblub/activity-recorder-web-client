@@ -92,8 +92,6 @@
                             this.time,
                             this.description2
                         )
-
-                        this.success = true
                     }
 
                     if (this.action === 'create') {
@@ -102,7 +100,12 @@
                             this.time,
                             this.description2
                         )
+
+                        this.$router.push('/')
                     }
+
+                    this.success = true
+
                 } catch (e) {
                     if (e.response.data.message) {
                         this.errors.push(e.response.data.message)
