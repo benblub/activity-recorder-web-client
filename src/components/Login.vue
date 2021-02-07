@@ -45,6 +45,7 @@
 
                      localStorage.apitoken = response.data.apiToken
                      localStorage.userIri = response.data.iri
+                     localStorage.email = response.data.email
 
                      Vue.prototype.$http.defaults.headers.common['X-AUTH-TOKEN'] = response.data.apiToken
 
