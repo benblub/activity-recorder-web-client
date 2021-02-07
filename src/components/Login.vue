@@ -51,7 +51,15 @@
 
                      store.commit('auth_success', response.data.apiToken, response.data.iri)
 
-                     this.$router.push('/')
+                     this.$router.push('/').catch((err)=>{
+                         if (
+                             err.name !== 'NavigationDuplicated' &&
+                             !err.message.includes('Avoided redundant navigation to current location')
+                         ) {
+                             // But print any other errors to the console
+                             console.log(err);
+                         }
+                     })
                  } catch (e) {
                      console.log(e)
                      localStorage.removeItem('apiToken')
